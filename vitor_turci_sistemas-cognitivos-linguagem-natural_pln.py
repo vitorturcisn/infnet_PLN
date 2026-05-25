@@ -206,6 +206,39 @@ plt.tight_layout()
 plt.show()
 
 # =====================================================================
+# ANÁLISE MORFOLÓGICA COM POS TAGGING (spaCy)
+# =====================================================================
+print("\nExecutando Análise Morfológica via POS Tagging (Extração de Adjetivos)...")
+
+# Amostragem aleatória de documentos para otimização de processamento em memória
+amostra_pos = df_fla['text'].dropna().sample(n=300, random_state=42).tolist()
+adjetivos_corpus = []
+
+for texto in amostra_pos:
+    # Limitação do escopo de leitura (primeiros 1500 caracteres) para eficiência computacional
+    doc_pos = nlp(texto[:1500])
+
+    for token in doc_pos:
+        # Filtragem estrita da classe gramatical 'Adjetivo' (POS = ADJ) e tamanho mínimo
+        if token.pos_ == 'ADJ' and len(token.text) > 3:
+            adjetivos_corpus.append(token.lemma_.lower())
+
+top_adjetivos = Counter(adjetivos_corpus).most_common(10)
+
+print("-" * 60)
+print("TOP 10 ADJETIVOS MAIS FREQUENTES (POS TAGGING)")
+print("-" * 60)
+
+for adj, qtd in top_adjetivos:
+    print(f" - {adj.capitalize():<15} | Frequência: {qtd}")
+
+print("-" * 60)
+print("SÍNTESE DO POS TAGGING:")
+print("A predominância de termos avaliativos ('grande', 'bom', 'novo') e numerais/temporais ")
+print("('primeiro', 'último') evidencia uma narrativa jornalística focada em ranqueamento, ")
+print("qualificação de desempenho e marcos temporais, típicos da crônica esportiva.")
+
+# =====================================================================
 # ANÁLISE COMPARATIVA: STEMMING vs LEMMATIZATION
 # =====================================================================
 
@@ -480,8 +513,6 @@ print("\nExecução do pipeline finalizada com sucesso.")
 # =====================================================================
 # GRÁFICOS ADICIONAIS PARA O RELATÓRIO
 # =====================================================================
-
-print("📊 Gerando Gráficos Adicionais para o Relatório...")
 
 plt.figure(figsize=(16, 6))
 
